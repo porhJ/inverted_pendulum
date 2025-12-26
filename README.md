@@ -17,7 +17,7 @@ This project studies stabilization of an inverted pendulum on a cart using LQR c
 * $m_c$ : mass of the cart, $m_p$: mass of the point mass, $l$: length of the rigid string
 * $x$: vector from origin to CM of the cart, $\theta$: angle of the rigid string from the upright 
 *  Using  Lagrangian mechanics to derive non-linear dynamics 
-$$T = \frac1 2 m_c \dot{x}^2 + \frac 1 2 m_p (\dot{x} + l\dot{\theta}\sin{\theta})^2 + \frac 1 2m_p(l\dot{\theta}\sin{\theta})^2$$
+$$T = \frac1 2 m_c \dot{x}^2 + \frac 1 2 m_p (\dot{x} + l\dot{\theta}\cos{\theta})^2 + \frac 1 2m_p(l\dot{\theta}\sin{\theta})^2$$
 $$U = -m_pgl\cos{\theta}$$ 
 $$L = T - U$$
 $$\frac{d}{dt} \frac {\partial}{\partial \dot{\underline{x}}}L  - \frac {\partial}{\partial \underline{x}}L = \tau$$
@@ -68,7 +68,7 @@ $$\Delta\underline{\dot{x}} = \frac D {D\underline{x}} f(\bar{\underline{x}}, \b
 ### Overview of the control
 ![Diagram of LQR control](https://www.mathworks.com/discovery/optimal-control/_jcr_content/mainParsys/columns/daa10959-3b74-4985-b7e9-d12f3dee67b6/image_copy.adapt.full.medium.jpg/1765106504765.jpg "source: https://www.mathworks.com/discovery/optimal-control.html")*the image is from https://www.mathworks.com/discovery/optimal-control.html*
 
-LQR is an optimal control. Unlike pole placement, you don't have to choose stable eigenvalues ($\lambda < 0$), and then solve for K, in LQR, we find the optimal K by choosing characteristic. Q and R are penalizing bad performance (error between desired state and the current state) and actuator effort (how aggressive we can command the actuator) respectively. I acknowledge that most robotics systems use discrete time system, but in this simulation, I choose to use continuous time system. Thus my cost function is
+LQR is an optimal control (optimality is defined with respect to the quadratic cost and the linearized model). Unlike pole placement, you don't have to choose stable eigenvalues ($\lambda < 0$), and then solve for K, in LQR, we find the optimal K by choosing characteristic. Q and R are penalizing bad performance (error between desired state and the current state) and actuator effort (how aggressive we can command the actuator) respectively. I acknowledge that most robotics systems use discrete time system, but in this simulation, I choose to use continuous time system. Thus my cost function is
 $$J = \int_{0}^{\infty} (\underline{x}^{T}Q\underline{x} + u^{T}Ru) dt  $$
 and our goal here is to find u such that minimize the cost function.
 From math, $K$ is the optimal gain that results in minimizing the cost function J
@@ -129,7 +129,8 @@ This is for a level of realism where the cart can not travel infinitely.
 
 
 ## Q/R Tuning
-I have done this 2 times, one with rail limit and one without. So I am going to divide into 2 sections
+I have done this 2 times, one with rail limit and one without. So I am going to divide into 2 sections.
+Q and R are chosen to reflect acceptable state magnitudes and actuator aggressiveness rather than physical constants.
 
 ### Without rail limit
 * Initial Intuition: 
@@ -156,4 +157,4 @@ High $Q_{\theta}$ works great for the system without rail limit. Convergent time
 	* Starts with Q = diag(1, 1, 1, 1) and R = 1
 	* Tuning  each one Q separately, switch to another Q once convergent time gets higher or stop reducing.
 * Observation
-Convergent time is lowest when $Q_{\theta} \approx Q_{x}$ and $Q_{\dot\theta} \approx Q_{\dot x}$. Unlike the system without rail limit, with $Q_{\theta} \gg Q_{x}, Q_{\dot{x}}$, it results in oscillating and never converge.
+Convergent time is lowest when $Q_{\theta} \approx Q_{x}$ and $Q_{\dot\theta} \approx Q_{\dot x}$. Unlike the system without rail limit, with $Q_{\theta} \gg Q_{x}, Q_{\dot{x}}$, it results in oscillating and never converge. This is likely caused by repeated impacts at the rail boundaries.
