@@ -63,7 +63,7 @@ $$\begin{split}
                  & = \underline{f} (\bar{\underline{x}}, u) + \frac {D} {D\underline{x}} f(\bar{\underline{x}}, \bar{u}) \Delta{\underline{x}} + \frac {D^2} {D\underline{x}^2} f(\bar{\underline{x}}, \bar{u}) \Delta{\underline{x}}^2 + ... + \frac {D} {Du} f(\bar{\underline{x}}, \bar{u}) \Delta{u} + \frac {D^2} {Du^2} f(\bar{\underline{x}}, \bar{u}) \Delta{u}^2 + ...
                                   \end{split}$$
                                 
-                                  where $\bar{\underline{x}}$ is a state vector at an equilibrium point.
+where $\bar{\underline{x}}$ is a state vector at an equilibrium point.
                                 
 * $\Delta{\underline{x}}$ is a vector from an equilibrium point to a nearby point, as it is the nearby point, $\Delta{\underline{x}}$ is small, thus, $\Delta{\underline{x}}^2, \Delta{\underline{x}}^3, ...$ are incredibly small, so we can neglect them! Thus
 $$\Delta\underline{\dot{x}} = \frac D {D\underline{x}} f(\bar{\underline{x}}, \bar{u}) \Delta{x}+ \frac D {Du} f(\bar{\underline{x}}, \bar{u}) \Delta{u}$$
