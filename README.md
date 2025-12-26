@@ -74,7 +74,8 @@ and our goal here is to find u such that minimize the cost function.
 From math, $K$ is the optimal gain that results in minimizing the cost function J
 *there is more mathematical detail on how to compute K, but I am not gonna write it out here as it so long, but I encourage you to look up the calculation detail from this MIT's Underactuated Robotics book [https://underactuated.mit.edu/lqr.html]*
 * $Q$ is a diagonal matrix, and, in this case,
- $$Q = \begin{bmatrix}  
+
+$$Q = \begin{bmatrix}  
 Qx & 0 &0 & 0\\  
 0& Q\dot{x}  &0 & 0 \\
 0 & 0 & Q\theta & 0 \\
@@ -87,7 +88,9 @@ $$K = \begin{bmatrix}  k_1 & k_2 &k_3 & k_4 \end{bmatrix}$$
 
 ### Connect the dots
 I mentioned earlier that u is just a number, and as the diagram above shows, $u = -Kx$. And from our linearized model, $\delta{\dot{\underline{x}}} = A\delta{\underline{x}} + B\delta{u}$ where $\delta{x}$, $\delta{u}$ are vectors from equilibrium state and control u to current state and current control u. We get that:
+
 $$u = -K\delta{x} = -K(x -\bar{x})$$
+
 And this is exactly command u we send!!
 
 ## Architecture
