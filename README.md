@@ -84,6 +84,7 @@ Qx & 0 &0 & 0\\
 
 * $R$ is a number in this case because we only have one actuator, you can see as $B = [1, 0]$, thus u is just a 1x1 matrix or a number.
 * $K$ is the optimal gain 1x4 matrix, 
+
 $$K = \begin{bmatrix}  k_1 & k_2 &k_3 & k_4 \end{bmatrix}$$ 
 
 ### Connect the dots
