@@ -17,10 +17,15 @@ This project studies stabilization of an inverted pendulum on a cart using LQR c
 * $m_c$ : mass of the cart, $m_p$: mass of the point mass, $l$: length of the rigid string
 * $x$: vector from origin to CM of the cart, $\theta$: angle of the rigid string from the upright 
 *  Using  Lagrangian mechanics to derive non-linear dynamics 
+
 $$T = \frac1 2 m_c \dot{x}^2 + \frac 1 2 m_p (\dot{x} + l\dot{\theta}\cos{\theta})^2 + \frac 1 2m_p(l\dot{\theta}\sin{\theta})^2$$
+
 $$U = -m_pgl\cos{\theta}$$ 
+
 $$L = T - U$$
+
 $$\frac{d}{dt} \frac {\partial}{\partial \dot{\underline{x}}}L  - \frac {\partial}{\partial \underline{x}}L = \tau$$
+
 * From the Manipulator equation, $M(\underline{q})\underline{\ddot{q}} +  C(\underline{q}, \underline{\dot{q}}) \underline{\dot{q}}= \tau_g(\underline{q}) + Bu$, where:
 
 $$M(\underline{q}) = \begin{bmatrix}  
@@ -52,11 +57,14 @@ As I will be using LQR as a controller, it requires the system to be linear as i
 In order to linearize the non-linear system, I need to choose an equilibrium point, and linearize the system around the point. In our system, there are two equilibrium points, $\theta = 0$ (upright) and $\theta = \pi$ (hanging down). As our goal is inverted pendulum, we must choose $\theta = 0$ as our equilibrium point.
 
 Idea of linearization is, given $\underline{\dot{x}} = \underline{f}(\underline{x})$ where $\underline{f}(\underline{x})$ is a non linear function, we approximate the function around an equilibrium point as a linear function. 
+
 $$\begin{split} 
 \underline{\dot{x}} & = \underline{f}(\underline{x}, u) = \underline{f}(\bar{\underline{x}} + \Delta{\underline{x}}, u + \Delta{u}) \\
                  & = \underline{f} (\bar{\underline{x}}, u) + \frac {D} {D\underline{x}} f(\bar{\underline{x}}, \bar{u}) \Delta{\underline{x}} + \frac {D^2} {D\underline{x}^2} f(\bar{\underline{x}}, \bar{u}) \Delta{\underline{x}}^2 + ... + \frac {D} {Du} f(\bar{\underline{x}}, \bar{u}) \Delta{u} + \frac {D^2} {Du^2} f(\bar{\underline{x}}, \bar{u}) \Delta{u}^2 + ...
                                   \end{split}$$
+                                
                                   where $\bar{\underline{x}}$ is a state vector at an equilibrium point.
+                                
 * $\Delta{\underline{x}}$ is a vector from an equilibrium point to a nearby point, as it is the nearby point, $\Delta{\underline{x}}$ is small, thus, $\Delta{\underline{x}}^2, \Delta{\underline{x}}^3, ...$ are incredibly small, so we can neglect them! Thus
 $$\Delta\underline{\dot{x}} = \frac D {D\underline{x}} f(\bar{\underline{x}}, \bar{u}) \Delta{x}+ \frac D {Du} f(\bar{\underline{x}}, \bar{u}) \Delta{u}$$
 
@@ -69,7 +77,9 @@ $$\Delta\underline{\dot{x}} = \frac D {D\underline{x}} f(\bar{\underline{x}}, \b
 ![Diagram of LQR control](https://www.mathworks.com/discovery/optimal-control/_jcr_content/mainParsys/columns/daa10959-3b74-4985-b7e9-d12f3dee67b6/image_copy.adapt.full.medium.jpg/1765106504765.jpg "source: https://www.mathworks.com/discovery/optimal-control.html")*the image is from https://www.mathworks.com/discovery/optimal-control.html*
 
 LQR is an optimal control (optimality is defined with respect to the quadratic cost and the linearized model). Unlike pole placement, you don't have to choose stable eigenvalues ($\lambda < 0$), and then solve for K, in LQR, we find the optimal K by choosing characteristic. Q and R are penalizing bad performance (error between desired state and the current state) and actuator effort (how aggressive we can command the actuator) respectively. I acknowledge that most robotics systems use discrete time system, but in this simulation, I choose to use continuous time system. Thus my cost function is
+
 $$J = \int_{0}^{\infty} (\underline{x}^{T}Q\underline{x} + u^{T}Ru) dt  $$
+
 and our goal here is to find u such that minimize the cost function.
 From math, $K$ is the optimal gain that results in minimizing the cost function J
 *there is more mathematical detail on how to compute K, but I am not gonna write it out here as it so long, but I encourage you to look up the calculation detail from this MIT's Underactuated Robotics book [https://underactuated.mit.edu/lqr.html]*
