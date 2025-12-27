@@ -1,19 +1,18 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.animation import FuncAnimation
-from matplotlib.patches import Rectangle
 
 from main import InvertedPendulum
-from utils import is_converged, sim_animation
+from utils.utils import CartPoleAnimator, is_converged, plot_inverted_pendulum_LQR
 
 # initialization
-y_fixed = np.array([0.0, 0.0, 0.0, 0.0])
-u_fixed = 0.0
+y_fixed = np.array(
+    [0.0, 0.0, 0.0, 0.0]
+)  # equilibrium we wanna reach, there is 2 equilibruim points, we choose the upright one. because, obviously, this is inverted pendulum, not a normal pendulum.
+u_fixed = 0.0  # actuator what it reaches equilibrium, why would u wanna act on the cart anymore, so set it to be zero
 epsilon = 1e-6
-m_c = 2
-m_p = 5
-lo = 2  # length of the rigid string
-Q = np.diag([1, 1, 1, 1])  # baseline
+m_c = 2  # mass of the cart, up to u.
+m_p = 5  # mass of the point masss, up to u too.
+lo = 2  # length of the rigid string u can change to whatever u like
+Q = np.diag([1, 1, 1, 1])  # baseline, note: its [Qx, Qxdot, Qtheta, Qthetadot]
 R = np.diag([1])  # baseline
 hist = []
 x_hist = []
@@ -45,68 +44,9 @@ for step in range(100000):
         t_con = step
         break
 
-plt.plot(theta_hist, label="theta")
-# plt.plot(x_hist, label="x")
-plt.plot(theta_dot_hist, label="theta_dot")
-# plt.plot(x_dot_hist, label="x_dot")
-plt.title("Inverted Pendulum LQR-Control")
-plt.axhline(y=0, color="r", linestyle="--", label="Target equilibrium (theta=0)")
-plt.axvline(x=t_con, color="g", linestyle="--", label=f"Convergent time (x={t_con})")
-fig = plt.gcf()
-fig.text(
-    0.5,
-    0.005,  # ← smaller = lower (0 is absolute bottom)
-    f"Q = diag({np.diag(Q)})    R = diag({np.diag(R)})",
-    ha="center",
-    va="bottom",
-    fontsize=9,
-)
-plt.xlabel("Time Steps")
-plt.legend()
-Q_vals = "_".join(f"{v:g}" for v in np.diag(Q))
-R_vals = "_".join(f"{v:g}" for v in np.diag(R))
-
-plt.savefig(f"images/baseline/Q{Q_vals}_R{R_vals}NoXXdot.png", dpi=300)
-plt.show()
+plot_inverted_pendulum_LQR(theta_hist, x_hist, theta_dot_hist, x_dot_hist, t_con, Q, R)
 
 
-cart_width = 0.4
-cart_height = 0.2
-lo = sys.l
-
-fig, ax = plt.subplots()
-ax.set_xlim(-2, 2)
-ax.set_ylim(-1, 1)
-ax.set_aspect("equal")
-ax.grid()
-
-cart = Rectangle((0, 0), cart_width, cart_height, fc="black")
-(pole,) = ax.plot([], [], lw=2)
-ax.add_patch(cart)
-
-
-def init():
-    cart.set_xy((-cart_width / 2, -cart_height / 2))
-    pole.set_data([], [])
-    return cart, pole
-
-
-def update(i):
-    x, _, theta, _ = hist[i]
-    cart.set_xy((x - cart_width / 2, -cart_height / 2))
-    px = x + lo * np.sin(theta)
-    py = lo * np.cos(theta)
-    pole.set_data([x, px], [0, py])
-    return cart, pole
-
-
-ani = FuncAnimation(
-    fig,
-    update,
-    frames=range(0, len(hist), 10),
-    init_func=init,
-    interval=20,  # ms between frames
-    blit=True,
-)
-
-plt.show()
+animator = CartPoleAnimator(hist, pole_length=sys.l)
+ani = animator.animate()
+animator.show()
