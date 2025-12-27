@@ -104,7 +104,7 @@ $$u = -K\delta{x} = -K(x -\bar{x})$$
 
 And this is exactly command u we send!!
 
-## Architecture
+# Architecture
 
 - **Controller**
 As mentioned, to use LQR control, we need to compute $K$, and to do so, we need $A$ and $B$ from *linearized dynamics*, $\Delta\underline{\dot{x}} = \frac D {D\underline{x}} f(\bar{\underline{x}}, \bar{u}) \Delta{x}+ \frac D {Du} f(\bar{\underline{x}}, \bar{u}) \Delta{u}$. 
@@ -112,7 +112,7 @@ As mentioned, to use LQR control, we need to compute $K$, and to do so, we need 
 - **Simulation**
 Remember, the real world is not linear but a *non-linear dynamics system*. Thus our simulation must be run on the non-linear dynamics system, $M(\underline{q})\underline{\ddot{q}} +  C(\underline{q}, \underline{\dot{q}}) \underline{\dot{q}}= \tau_g(\underline{q}) + Bu$
 
-### Conclusion
+## Conclusion
 ```
    non-linear dynamics: M(q), C(q, q_dot), tau(q), u, equilibrium state x_bar
                                       |
@@ -133,7 +133,7 @@ Remember, the real world is not linear but a *non-linear dynamics system*. Thus 
                                non-linear dynamics -> x_dot
 ```
 
-## Constraint
+# Constraint
 * Rail limit
 This is for a level of realism where the cart can not travel infinitely.
 	* The cart runs on a 4 meters rail
@@ -142,11 +142,11 @@ This is for a level of realism where the cart can not travel infinitely.
 
 
 
-## Q/R Tuning
+# Q/R Tuning
 I have done this 2 times, one with rail limit and one without. So I am going to divide into 2 sections.
 Q and R are chosen to reflect acceptable state magnitudes and actuator aggressiveness rather than physical constants.
 
-### Without rail limit
+## Without rail limit
 * Initial Intuition: 
 	* R is limited between 0.1 - 1 to protect the actuator.
 	* $Q_x$ is not limited because the cart can go anywhere it needs, thus it can be small.
@@ -160,7 +160,7 @@ Q and R are chosen to reflect acceptable state magnitudes and actuator aggressiv
 High $Q_{\theta}$ works great for the system without rail limit. Convergent time inverse proportion to the $Q_{\theta}$, keep $Q_{\dot{\theta}}$ about half of the $Q_{\theta}$ works great.
 
 
-### With rail limit
+## With rail limit
 * Initial Intuition:
 	* R is limited between 0.1 - 1 to protect the actuator
 	* $Q_x$ is limited because the cart should not go too far because it might bump into the end of the rail. It must be moderately high.
@@ -172,3 +172,37 @@ High $Q_{\theta}$ works great for the system without rail limit. Convergent time
 	* Tuning  each one Q separately, switch to another Q once convergent time gets higher or stop reducing.
 * Observation
 Convergent time is lowest when $Q_{\theta} \approx Q_{x}$ and $Q_{\dot\theta} \approx Q_{\dot x}$. Unlike the system without rail limit, with $Q_{\theta} \gg Q_{x}, Q_{\dot{x}}$, it results in oscillating and never converge. This is likely caused by repeated impacts at the rail boundaries.
+
+# Results
+
+## Baseline 
+$Q = diag([1, 1, 1, 1])$, $R = [1]$
+
+*System without rail*
+
+![graph between variables vs time of no rail system](images/baseline/NoRailQ1_1_1_1_R1.png)
+
+*System with rail*
+
+![graph between variables vs time of rail system](images/baseline/Q1_1_1_1_R1.png)
+
+As you can see, you can barely see anything. Here is the graph without $x$, $\dot{x}$
+
+![graph between variables vs time of rail system with no x, x_dot](images/baseline/Q1_1_1_1_R1NoXXdot.png)
+
+## System with rail
+
+For the system with rail limit, unlike the system without rail, when $Q_x$ < $Q_{\theta}$, $\theta$ would not converge to 0 but, instead, oscillating.
+
+![graph between variables vs time of rail system, Qx < Qtheta](images/ideal/Q60_10_100_20_R0.1.png)
+
+After hours of tuning, I have discovered that $\theta$ would converge to 0 when $Q_x \approx Q_{\theta}$ and $Q_{\dot{x}} \approx Q_{\dot{\theta}}$.
+
+![graph between variables vs time of rail system, Qx = Qtheta](images/ideal/Q60_16_60_15_R0.1.png)
+
+# Limitation
+
+* Perfect state access $\underline{y} = \underline{x}$
+* No noise or disturbance
+* No sensor delay
+* Local stability
