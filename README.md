@@ -3,6 +3,8 @@
 
 This project studies stabilization of an inverted pendulum on a cart using LQR control. The controller is designed via linearization but applied to the full nonlinear dynamics. We investigate the effect of rail constraints on stability and Q/R tuning.
 
+![bounded_undisturb_inverted_pendulum_cart](images/bounded_undisturb_ip.gif)
+
 # System modelling
 
 ## Coordinates and assumptions
